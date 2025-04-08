@@ -9,7 +9,7 @@ class AuthService {
   final Dio _dio = Dio();
 
   // ✅ Google 로그인 (회원가입 포함)
-  Future<void> signInWithGoogle() async {
+  Future<bool> signInWithGoogle() async {
     try {
       final googleProvider = GoogleAuthProvider();
       final UserCredential userCredential =
@@ -22,12 +22,15 @@ class AuthService {
       print('Firebase UID: $firebaseUid');
       print('Email: $email, Name: $displayName');
 
-      // 자동 로그인 처리 (Spring Boot로 UID 전송)
       await sendUidToSpringBoot(firebaseUid, email, displayName);
+
+      return true; // ✅ 로그인 성공 시 true 반환
     } catch (e) {
       print('🚨 Google 로그인 오류: $e');
+      return false; // ✅ 실패 시 false 반환
     }
   }
+
 
   // ✅ 이메일 회원가입
   Future<void> signUpWithEmail(String email, String password) async {

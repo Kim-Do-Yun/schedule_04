@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'services/auth_service.dart';
+import 'screens/schedule_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,35 +13,49 @@ void main() async{
   runApp(const MyApp());
 }
 
+final GoRouter _router = GoRouter(
+  redirect: (context, state) {
+    final user = FirebaseAuth.instance.currentUser;
+    final loggingIn = state.matchedLocation == '/login';
+
+
+    if (user == null) {
+      return loggingIn ? null : '/login';
+    } else {
+      return loggingIn ? '/home' : null;
+    }
+  },
+  initialLocation: '/login',
+  routes: [
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => LoginScreen(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/schedules',
+      builder: (context, state) => ScheduleScreen(),
+    ),
+  ],
+);
+
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final user = FirebaseAuth.instance.currentUser;
+
+    return MaterialApp.router(
+      routerConfig: _router,
       title: '일정 관리 앱',
-      home: SignInScreen(),
     );
+
   }
 }
 
-class SignInScreen extends StatelessWidget {
-  final AuthService _authService = AuthService();
 
-  SignInScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('로그인 화면')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            await _authService.signInWithGoogle();
-          },
-          child: const Text('Google 로그인'),
-        ),
-      ),
-    );
-  }
-}

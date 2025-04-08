@@ -17,7 +17,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     fetchSchedules();
   }
 
-  // 📌 전체 일정 불러오기
   void fetchSchedules() async {
     List<ScheduleModel> fetchedSchedules = await scheduleService.getAllSchedules();
     setState(() {
@@ -25,7 +24,6 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
-  // 📌 일정 추가
   void addNewSchedule() async {
     ScheduleModel newSchedule = ScheduleModel(
       title: "회의",
@@ -37,22 +35,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     bool success = await scheduleService.addSchedule(newSchedule);
     if (success) {
-      fetchSchedules(); // 다시 일정 불러오기
+      fetchSchedules();
     }
   }
 
-  // 📌 일정 삭제
   void deleteSchedule(int id) async {
     bool success = await scheduleService.deleteSchedule(id);
     if (success) {
-      fetchSchedules(); // 일정 갱신
+      fetchSchedules();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("일정 관리")),
+      appBar: AppBar(title: const Text("일정 관리")),
       body: ListView.builder(
         itemCount: schedules.length,
         itemBuilder: (context, index) {
@@ -60,7 +57,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             title: Text(schedules[index].title),
             subtitle: Text("${schedules[index].date} ${schedules[index].startTime} - ${schedules[index].endTime}"),
             trailing: IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () => deleteSchedule(schedules[index].id!),
             ),
           );
@@ -68,7 +65,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: addNewSchedule,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
